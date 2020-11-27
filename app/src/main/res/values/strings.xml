@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">MyMovies</string>
+    <string name="title_movies">Movies</string>
+    <string name="title_dashboard">Dashboard</string>
+</resources>
