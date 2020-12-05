@@ -10,6 +10,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name="ua.kpi.comsys.iv7124.mymovies.ui.movies.NewMoviePopUp"
+            android:theme="@style/AppTheme.PopMe"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="ua.kpi.comsys.iv7124.mymovies.ui.movies.ExtendedMoviePopUp"
+            android:theme="@style/AppTheme.PopMe"
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
             android:name=".MainActivity"
             android:label="@string/app_name">
             <intent-filter>

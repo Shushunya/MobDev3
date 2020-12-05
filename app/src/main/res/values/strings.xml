@@ -2,4 +2,18 @@
     <string name="app_name">MyMovies</string>
     <string name="title_movies">Movies</string>
     <string name="title_dashboard">Dashboard</string>
+
+    <string name="Title">Title: %1$s</string>
+    <string name="Year">Year: %1$s</string>
+    <string name="Genre">Genre: %1$s</string>
+    <string name="Director">Director: %1$s</string>
+    <string name="Actors">Actors: %1$s</string>
+    <string name="Country">Country: %1$s</string>
+    <string name="Language">Language: %1$s</string>
+    <string name="Production">Production: %1$s</string>
+    <string name="Released">Released: %1$s</string>
+    <string name="Runtime">Runtime: %1$s</string>
+    <string name="Awards">Awards: %1$s</string>
+    <string name="Rating">Rating: %1$s</string>
+    <string name="Plot">Plot: %1$s</string>
 </resources>

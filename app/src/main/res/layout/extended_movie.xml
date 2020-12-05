@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/extended_movie_poster"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"
+                tools:srcCompat="@drawable/poster_01" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:id="@+id/extended_movie_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Title"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/extended_movie_year"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Year"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/extended_movie_genre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Genre"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:id="@+id/extended_movie_director"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Director"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/extended_movie_actors"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Actors"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:id="@+id/extended_movie_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Country"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/extended_movie_language"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Language"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/extended_movie_production"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Production"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/extended_movie_released"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Released"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/extended_movie_runtime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Runtime"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:id="@+id/extended_movie_awards"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Awards"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/extended_movie_rating"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Rating"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="20dp" />
+
+            <TextView
+                android:id="@+id/extended_movie_plot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/Plot"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
