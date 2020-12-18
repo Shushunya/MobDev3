@@ -2,7 +2,6 @@ package ua.kpi.comsys.iv7124.mymovies
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -28,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(setOf(R.id.navigation_movies, R.id.navigation_dashboard))
+        val appBarConfiguration = AppBarConfiguration(setOf(R.id.navigation_movies, R.id.navigation_images, R.id.navigation_paint))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 

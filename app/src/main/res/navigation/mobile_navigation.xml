@@ -12,8 +12,15 @@
         tools:layout="@layout/fragment_movies" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="ua.kpi.comsys.iv7124.mymovies.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_images"
+        android:name="ua.kpi.comsys.iv7124.mymovies.ui.images.ImagesFragment"
+        android:label="@string/title_images"
+        tools:layout="@layout/fragment_images" />
+
+    <fragment
+        android:id="@+id/navigation_paint"
+        android:name="ua.kpi.comsys.iv7124.mymovies.ui.paint.PaintFragment"
+        android:label="@string/title_paint"
+        tools:layout="@layout/fragment_paint" />
+
 </navigation>

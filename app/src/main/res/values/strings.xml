@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">MyMovies</string>
     <string name="title_movies">Movies</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_images">Images</string>
+    <string name="title_paint">Paint</string>
 
     <string name="Title">Title: %1$s</string>
     <string name="Year">Year: %1$s</string>
