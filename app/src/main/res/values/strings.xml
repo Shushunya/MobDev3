@@ -4,6 +4,8 @@
     <string name="title_images">Images</string>
     <string name="title_paint">Paint</string>
 
+    <string name="imageTag">image</string>
+
     <string name="Title">Title: %1$s</string>
     <string name="Year">Year: %1$s</string>
     <string name="Genre">Genre: %1$s</string>
