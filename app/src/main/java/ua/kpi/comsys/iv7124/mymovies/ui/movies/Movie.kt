@@ -27,3 +27,7 @@ class Movie (val Title: String,
         "", "", "","","","","","",
         "","","","","","")
 }
+
+class MovieSearchResult {
+    var Search: List<Movie> = listOf()
+}

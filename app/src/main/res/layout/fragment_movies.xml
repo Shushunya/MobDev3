@@ -30,13 +30,6 @@
 
         </androidx.appcompat.widget.SearchView>
 
-        <ImageButton
-            android:id="@+id/newMovieButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            app:srcCompat="@drawable/ic_baseline_add_box_24" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -45,5 +38,24 @@
         android:layout_height="wrap_content"
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <TextView
+        android:id="@+id/noItemsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No items were found"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <ProgressBar
+        android:id="@+id/moviesListProgress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

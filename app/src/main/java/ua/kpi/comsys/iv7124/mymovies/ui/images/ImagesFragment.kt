@@ -1,18 +1,25 @@
 package ua.kpi.comsys.iv7124.mymovies.ui.images
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
-import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_images.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import ua.kpi.comsys.iv7124.mymovies.COUNT
+import ua.kpi.comsys.iv7124.mymovies.IMAGES_API_KEY
+import ua.kpi.comsys.iv7124.mymovies.IMAGES_REQUEST
 import ua.kpi.comsys.iv7124.mymovies.R
-
-const val IMAGE_REQUEST = 24
+import java.io.BufferedInputStream
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
 class ImagesFragment : Fragment() {
 
@@ -27,31 +34,34 @@ class ImagesFragment : Fragment() {
 
         imagesAdapter = ImagesTableListAdapter(mutableListOf(ImagesTable()))
 
+        lifecycleScope.launch(Dispatchers.IO) {
+            val imagesTables = getImages()
+            activity?.runOnUiThread {
+                imagesAdapter = ImagesTableListAdapter(imagesTables)
+                images_list.adapter = imagesAdapter
+            }
+        }
+
         val recyclerView: RecyclerView = root.findViewById(R.id.images_list)
         recyclerView.adapter = imagesAdapter
 
         return root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        addImageButton.setOnClickListener {innerView ->
-            onAddImageClicked(innerView)
+    private fun getImages(): MutableList<ImagesTable> {
+        val url = URL("https://pixabay.com/api/?key=$IMAGES_API_KEY&q=$IMAGES_REQUEST&image_type=photo&per_page=$COUNT")
+        val urlConnection = url.openConnection() as HttpURLConnection
+        try {
+            val input = BufferedInputStream(urlConnection.inputStream)
+            val streamReader = InputStreamReader(input)
+            val gson = Gson()
+            val images = gson.fromJson(streamReader,  ImageSearchResult::class.java).hits
+            return convertToTables(images)
+        } catch(ex: IOException) {
+            ex.printStackTrace()
+        }finally {
+            urlConnection.disconnect()
         }
-    }
-
-    private fun onAddImageClicked (view: View)
-    {
-        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-        startActivityForResult(gallery, IMAGE_REQUEST)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_REQUEST) {
-            val imageUri = data?.data
-            imagesAdapter.update(imageUri)
-        }
+        return mutableListOf()
     }
 }

@@ -1,6 +1,7 @@
 package ua.kpi.comsys.iv7124.mymovies
 
-import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
@@ -8,14 +9,13 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.gson.Gson
-import ua.kpi.comsys.iv7124.mymovies.ui.movies.Movie
 import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.util.*
+import java.net.URL
 
-var allMovies = mutableListOf<Movie>()
+const val MOVIES_API_KEY = "7e9fe69e"
+const val IMAGES_API_KEY = "19193969-87191e5db266905fe8936d565"
+const val COUNT = 27
+const val IMAGES_REQUEST = "yellow+flowers"
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,59 +25,21 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
         val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         val appBarConfiguration = AppBarConfiguration(setOf(R.id.navigation_movies, R.id.navigation_images, R.id.navigation_paint))
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-        allMovies = importFromJSON(applicationContext, Data::class.java, R.raw.movies)?.Search?.toMutableList() ?: mutableListOf()
     }
 }
 
-fun <T> importFromJSON(context: Context, classT: Class<T>, fileId: Int): T? {
-    var streamReader: InputStreamReader? = null
-    var fileInputStream: InputStream? = null
+fun getBitmap(imageUrl: String): Bitmap? {
+    if (imageUrl == "N/A") return null
+    val url = URL(imageUrl)
     try {
-        fileInputStream = context.resources.openRawResource(fileId)
-        streamReader = InputStreamReader(fileInputStream)
-        val gson = Gson()
-        return gson.fromJson(streamReader, classT)
-    } catch (ex: IOException) {
+        val inputStream = url.openStream()
+        return BitmapFactory.decodeStream(inputStream)
+    } catch(ex: IOException) {
         ex.printStackTrace()
-    } finally {
-        if (streamReader != null) {
-            try {
-                streamReader.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        if (fileInputStream != null) {
-            try {
-                fileInputStream.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-
     }
     return null
-}
-
-fun getResId(resName: String, c: Class<*>): Int {
-    val dotIndex = resName.indexOf(".")
-    val formattedName = if (dotIndex == -1) resName.toLowerCase(Locale.getDefault()) else resName.substring(0 until dotIndex)
-        .toLowerCase(Locale.getDefault())
-    return try {
-        val idField = c.getDeclaredField(formattedName)
-        idField.getInt(idField)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        -1
-    }
-}
-
-class Data {
-    var Search: List<Movie> = listOf()
 }
