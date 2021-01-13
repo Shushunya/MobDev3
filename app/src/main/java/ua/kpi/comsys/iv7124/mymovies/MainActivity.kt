@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import io.realm.Realm
 import java.io.IOException
 import java.net.URL
 
@@ -21,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Realm.init(this)
         setContentView(R.layout.activity_main)
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
 
@@ -32,14 +34,3 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-fun getBitmap(imageUrl: String): Bitmap? {
-    if (imageUrl == "N/A") return null
-    val url = URL(imageUrl)
-    try {
-        val inputStream = url.openStream()
-        return BitmapFactory.decodeStream(inputStream)
-    } catch(ex: IOException) {
-        ex.printStackTrace()
-    }
-    return null
-}

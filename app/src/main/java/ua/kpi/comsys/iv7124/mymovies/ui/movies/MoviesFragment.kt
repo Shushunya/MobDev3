@@ -5,10 +5,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import io.realm.Realm
+import io.realm.RealmList
 import kotlinx.android.synthetic.main.fragment_movies.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,6 +28,7 @@ const val selectedMovieId= "movieId"
 class MoviesFragment : Fragment() {
 
     private lateinit var moviesAdapter: MovieListAdapter
+    private lateinit var realm: Realm
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -37,6 +41,8 @@ class MoviesFragment : Fragment() {
 
         val recyclerView: RecyclerView = root.findViewById(R.id.movie_list)
         recyclerView.adapter = moviesAdapter
+
+        realm = Realm.getDefaultInstance()
 
         return root
     }
@@ -51,17 +57,26 @@ class MoviesFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                val request = newText ?: ""
                 moviesListProgress.visibility = View.VISIBLE
+                var movies: MutableList<Movie>?
                 lifecycleScope.launch(Dispatchers.IO) {
-                    val movies = getMovies(newText)
-                    activity?.runOnUiThread { onHttpResult(view, movies) }
+                    movies = tryGetMoviesFromHttp(request)
+                    activity?.runOnUiThread {
+                        if (movies == null){
+                            movies = tryGetMoviesFromRealm(request)?.toMutableList()
+                        } else {
+                            addRequestToRealm(request, movies!!)
+                        }
+                        onResult(view, movies)
+                    }
                 }
                 return false
             }
         })
     }
 
-    private fun getMovies(request: String?): MutableList<Movie> {
+    private fun tryGetMoviesFromHttp(request: String?): MutableList<Movie>? {
         request ?: return mutableListOf()
         if (request.length < 3) return mutableListOf()
 
@@ -75,13 +90,38 @@ class MoviesFragment : Fragment() {
             return gson.fromJson(streamReader,  MovieSearchResult::class.java).Search.toMutableList()
         } catch(ex: IOException) {
             ex.printStackTrace()
-        }finally {
+        } finally {
             urlConnection.disconnect()
         }
-        return mutableListOf()
+        return null
     }
 
-    private fun onHttpResult(view: View, movies: MutableList<Movie>) {
+    private fun addRequestToRealm(request: String, results: List<Movie>) {
+        val realmList = RealmList<String>()
+        realmList.addAll(results.map { it.imdbID })
+        val result = MovieRequest(request, realmList)
+
+        realm.beginTransaction()
+        realm.copyToRealmOrUpdate(result)
+        realm.copyToRealmOrUpdate(results)
+        realm.commitTransaction()
+    }
+
+    private fun tryGetMoviesFromRealm(request: String): List<Movie>? {
+        val result = realm.where(MovieRequest::class.java).equalTo("request", request).findFirst()
+        if (result == null) {
+            val duration = Toast.LENGTH_SHORT
+            val toast = Toast.makeText(context, "No movies found in storage", duration)
+            toast.show()
+        }
+        return realm.where(Movie::class.java).`in`("imdbID", result?.movies?.toTypedArray())?.findAll()
+    }
+
+    private fun onResult(view: View, movies: MutableList<Movie>?) {
+        if (movies == null) {
+            moviesListProgress.visibility = View.GONE
+            return
+        }
         if (movies.isEmpty()) {
             noItemsText.visibility = View.VISIBLE
         } else {

@@ -7,14 +7,16 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import io.realm.Realm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ua.kpi.comsys.iv7124.mymovies.R
-import ua.kpi.comsys.iv7124.mymovies.getBitmap
 
-
-class MovieListAdapter(private var list: MutableList<Movie>,  private val clickListener: (Movie) -> Unit)
+class MovieListAdapter(
+    private var list: MutableList<Movie>,
+    private val clickListener: (Movie) -> Unit
+)
     : RecyclerView.Adapter<MovieViewHolder>(){
 
     private var fullList: MutableList<Movie> = list.toMutableList()
@@ -56,14 +58,23 @@ class MovieViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
         titleView?.text = movie.Title
         yearView?.text = movie.Year
         typeView?.text = movie.Type
-
-        GlobalScope.launch(Dispatchers.IO) {
-            val posterBitmap = getBitmap(movie.Poster)
-            Handler(Looper.getMainLooper()).post {
-                if (posterBitmap == null) {
-                    posterView?.setImageResource(R.drawable.ic_movies_black_24dp)
-                } else {
-                    posterView?.setImageBitmap(posterBitmap)
+        if (movie.posterBitmap != null) {
+            posterView?.setImageBitmap(movie.getPosterBipMap())
+        } else {
+            val movieCopy = movie.copy()
+            GlobalScope.launch(Dispatchers.IO) {
+                val posterBitmap = movieCopy.loadPosterBipMapFromUrl()
+                Handler(Looper.getMainLooper()).post {
+                    if (posterBitmap == null) {
+                        posterView?.setImageResource(R.drawable.ic_movies_black_24dp)
+                    } else {
+                        posterView?.setImageBitmap(posterBitmap)
+                        val realm = Realm.getDefaultInstance()
+                        realm.beginTransaction()
+                        movie.setPosterBipMap(posterBitmap)
+                        realm.copyToRealmOrUpdate(movie)
+                        realm.commitTransaction()
+                    }
                 }
             }
         }

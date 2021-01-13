@@ -7,31 +7,21 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
+import io.realm.Realm
 import kotlinx.android.synthetic.main.extended_movie.*
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import ua.kpi.comsys.iv7124.mymovies.MOVIES_API_KEY
 import ua.kpi.comsys.iv7124.mymovies.R
-import ua.kpi.comsys.iv7124.mymovies.getBitmap
 import java.io.BufferedInputStream
 import java.io.IOException
 import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
-import kotlin.coroutines.CoroutineContext
 
-class ExtendedMoviePopUp  : AppCompatActivity(), CoroutineScope {
-    private var job: Job = Job()
+class ExtendedMoviePopUp  : AppCompatActivity() {
+    private lateinit var realm: Realm
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + job
-
-    override fun onDestroy() {
-        super.onDestroy()
-        job.cancel()
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.extended_movie)
@@ -43,15 +33,38 @@ class ExtendedMoviePopUp  : AppCompatActivity(), CoroutineScope {
         val height: Int = (dm.heightPixels)
         window.setLayout(width, height)
 
+        realm = Realm.getDefaultInstance()
+
         val selectedMovieId = intent.getStringExtra(selectedMovieId) ?: ""
 
         setTextVisibility(View.GONE)
         movieProgress.visibility = View.VISIBLE
 
         lifecycleScope.launch(Dispatchers.IO) {
-            val movie = getMovie(selectedMovieId)
-            val poster = getBitmap(movie.Poster)
-            runOnUiThread { onHttpResult(movie, poster) }
+            var movie = tryGetMovieFromHttp(selectedMovieId)
+            var poster: Bitmap? = null
+            runOnUiThread {
+                if (movie == null) {
+                    movie = tryGetMovieFromRealm(selectedMovieId)
+                }
+                else {
+                    updateMovieInRealm(movie!!)
+                }
+                poster = movie?.getPosterBipMap()
+            }
+            if (poster == null) {
+                poster = movie?.loadPosterBipMapFromUrl()
+            }
+            runOnUiThread {
+                if (poster != null && movie != null) {
+                    realm.beginTransaction()
+                    movie?.setPosterBipMap(poster!!)
+                    realm.copyToRealmOrUpdate(movie!!)
+                    realm.commitTransaction()
+                }
+                onResult(movie, poster)
+            }
+
         }
     }
 
@@ -72,7 +85,10 @@ class ExtendedMoviePopUp  : AppCompatActivity(), CoroutineScope {
         extended_movie_plot.visibility = v
     }
 
-    private fun onHttpResult(movie: Movie, poster: Bitmap?) {
+    private fun onResult(movie: Movie?, poster: Bitmap?) {
+        if (movie == null) {
+            return
+        }
         if (poster == null) {
             extended_movie_poster?.setImageResource(R.drawable.ic_movies_black_24dp)
         } else {
@@ -100,7 +116,7 @@ class ExtendedMoviePopUp  : AppCompatActivity(), CoroutineScope {
         finish()
     }
 
-    fun getMovie(id: String): Movie {
+    fun tryGetMovieFromHttp(id: String): Movie? {
         val url = URL("http://www.omdbapi.com/?apikey=$MOVIES_API_KEY&i=$id")
         val urlConnection = url.openConnection() as HttpURLConnection
         try {
@@ -113,6 +129,16 @@ class ExtendedMoviePopUp  : AppCompatActivity(), CoroutineScope {
         }finally {
             urlConnection.disconnect()
         }
-        return Movie()
+        return null
+    }
+
+    private fun updateMovieInRealm(m: Movie) {
+        realm.beginTransaction()
+        realm.copyToRealmOrUpdate(m)
+        realm.commitTransaction()
+    }
+
+    private fun tryGetMovieFromRealm(id: String): Movie? {
+        return realm.where(Movie::class.java).equalTo("imdbID", id).findFirst()
     }
 }
